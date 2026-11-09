@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Адвент-календарь — День 7</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      background: radial-gradient(circle at 50% 20%, #1a2a4f 0%, #0c1222 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+      color: #fff;
+      position: relative;
+    }
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: #fff;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-10px) rotate(0deg); opacity: 0.9; }
+      100% { transform: translateY(105vh) rotate(360deg); opacity: 0.2; }
+    }
+    .card-scene {
+      width: 100%;
+      max-width: 360px;
+      height: 610px;
+      perspective: 1200px;
+      position: relative;
+      z-index: 2;
+    }
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.75s cubic-bezier(0.4, 0.2, 0.2, 1);
+      border-radius: 24px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), 0 0 30px rgba(74, 144, 226, 0.2);
+    }
+    .card.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 26px;
+      overflow: hidden;
+      padding: 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid rgba(245, 215, 130, 0.45);
+    }
+    .card-front {
+      background: linear-gradient(155deg, #1b3560 0%, #0e1e38 50%, #091325 100%);
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+    }
+    .header-badge {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #ffe6a3;
+      display: inline-block;
+    }
+    .day-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #f5c469 0%, #c48b28 70%, #8a580e 100%);
+      box-shadow: 0 0 35px rgba(245, 196, 105, 0.5), inset 0 2px 6px rgba(255, 255, 255, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 18px auto;
+      border: 4px solid #fff3cf;
+    }
+    .day-num {
+      font-size: 76px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
+    }
+    .front-greeting {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .front-sub {
+      font-size: 14px;
+      color: #c9daf8;
+      line-height: 1.45;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .ornament-pattern {
+      letter-spacing: 6px;
+      color: #ffd875;
+      font-size: 15px;
+      margin: 8px 0;
+      opacity: 0.9;
+    }
+    .card-back {
+      background: linear-gradient(155deg, #162a4d 0%, #0d1a33 100%);
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .photo-frame {
+      width: 100%;
+      height: 185px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid #e5a93c;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      background: #0d1526;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    .back-content {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 10px 13px;
+      margin: 8px 0;
+      border: 1px solid rgba(255,255,255,0.12);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .story-title {
+      color: #f7d070;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .story-text {
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: #eaf1fa;
+      user-select: text;
+    }
+    .names-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 6px;
+      margin: 5px 0;
+      font-size: 11.5px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 5px 8px;
+      border-radius: 8px;
+    }
+    .names-grid span {
+      color: #ffd875;
+      font-weight: 600;
+    }
+    .recipe-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #1f78d1, #125199);
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 11px 14px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 14px rgba(22, 101, 192, 0.4);
+      transition: transform 0.15s, opacity 0.15s;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .recipe-btn:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+    .flip-btn-wrapper {
+      width: 100%;
+    }
+    .trigger-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+    .open-tab {
+      background: linear-gradient(135deg, #e5a93c, #b37416);
+      color: #211300;
+      border: 1px solid #ffe394;
+    }
+    .open-tab:active {
+      transform: scale(0.97);
+    }
+    .close-tab {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .close-tab:active {
+      transform: scale(0.97);
+      background: rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body>
+  <div id="snow-container"></div>
+
+  <div class="card-scene">
+    <div class="card" id="adventCard">
+      
+      <!-- Лицевая сторона -->
+      <div class="card-face card-front">
+        <div class="header-badge">Адвент-календарь</div>
+        
+        <div>
+          <div class="day-circle">
+            <span class="day-num">7</span>
+          </div>
+          <div class="front-greeting">День 7</div>
+          <div class="ornament-pattern">❄ ★ ❄ ★ ❄</div>
+          <p class="front-sub">Нажмите кнопку внизу, чтобы узнать имена зимних волшебников народов России</p>
+        </div>
+
+        <div class="flip-btn-wrapper">
+          <button class="trigger-tab open-tab" id="openBtn">
+            <span>✨ Открыть открытку</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Обратная сторона -->
+      <div class="card-face card-back">
+        <div class="photo-frame">
+          <img src="https://cdnstatic.rg.ru/uploads/images/2023/11/18/15p_new_podval_dedy_1000_903_270.jpeg" alt="Деды Морозы народов России" id="heroPhoto" />
+        </div>
+
+        <div class="back-content">
+          <div class="story-title">
+            <span>🎅</span>
+            <span>7. Дед Мороз — так ты его называла</span>
+          </div>
+          <div class="story-text">
+            Небольшой ликбез: у многих народов есть свое имя для Деда Мороза.
+            <div class="names-grid">
+              <div>Татары: <span>Кыш-бабай</span></div>
+              <div>Казахи: <span>Аяз Ата</span></div>
+              <div>Чуваши: <span>Хел Мучи</span></div>
+              <div>Карелы: <span>Паккайне</span></div>
+            </div>
+            А ты какой Дед Мороз? Пройдите тест и узнайте!
+          </div>
+        </div>
+
+        <div>
+          <a class="recipe-btn" href="https://ast.ru/who-are-you/kakoy-ty-ded-moroz/?ysclid=mvfh9msmjt782571357" target="_blank" rel="noopener noreferrer">
+            <span>✨ Пройти тест: Какой ты Дед Мороз?</span>
+            <span>➔</span>
+          </a>
+
+          <div class="flip-btn-wrapper">
+            <button class="trigger-tab close-tab" id="closeBtn">
+              <span>✕ Закрыть открытку</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const card = document.getElementById('adventCard');
+    const openBtn = document.getElementById('openBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    openBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.classList.add('is-flipped');
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.classList.remove('is-flipped');
+    });
+
+    const snow = document.getElementById('snow-container');
+    const flakes = ['❄', '❅', '❆', '•'];
+    for (let i = 0; i < 28; i++) {
+      const el = document.createElement('div');
+      el.className = 'snowflake';
+      el.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (Math.random() * 3 + 3.5) + 's';
+      el.style.animationDelay = (Math.random() * 5) + 's';
+      el.style.fontSize = (Math.random() * 12 + 10) + 'px';
+      snow.appendChild(el);
+    }
+  </script>
+</body>
+</html>
